@@ -81,10 +81,11 @@ class GameObject:
         return self.__rect
 
 
+
 #Class Character
 class Character(GameObject):
     # constructor
-    def __init__(self, tag, screen, pos_x=0, pos_y=0,image="enemy.png",life=3,keychain="empty",alive=True, daño=False):
+    def __init__(self, tag, screen, pos_x=0, pos_y=0,image="ghost.png",life=3,keychain="empty",alive=True, daño=False):
         super().__init__(tag, screen, pos_x, pos_y, image)
 
         #Atributos
@@ -274,7 +275,7 @@ class Weapon(GameObject):
 door_entrance = Door(f"door_entrance", screen, random.randint(65, width-200),pos_y= random.randint(150, 500),image="door_opened.png",open=True)
     #Comprobar si el nuevo GameObject colsiona con TODOS los anteriores
 for id in range(len(game_objects_list)):
-        #Comprobamos la colisión entre key el id
+        #Comprobamos la colisión entre door_entrance el id
     if(game_objects_list[id].get_rect().colliderect(door_entrance.get_rect())):
             door_entrance = Door(f"door_entrance", screen,pos_x= random.randint(65, width -200),pos_y=random.randint(150, 500),)
                             
@@ -283,9 +284,9 @@ game_objects_list.append(door_entrance)#Lo añado a la lista
 
 #Creo la puerta de salida
 door_exit = Door(f"door_exit", screen, random.randint(65, width-15), random.randint(30, height-15),image="door_closed.png",exit_way=True)
-    #Comprobar si el nuevo GameObject colsiona con TODOS los anteriores
+    #Comprobar si el nuevo GameObject colisiona con TODOS los anteriores
 for id in range(len(game_objects_list)):
-    #Comprobamos la colisión
+     #Comprobamos la colisión entre door_exit y el id
     if(game_objects_list[id].get_rect().colliderect(door_exit.get_rect())):
         door_exit = Door(f"door_exit", screen, random.randint(65, width - 15), random.randint(30, height - 15))
                             
@@ -295,7 +296,7 @@ game_objects_list.append(door_exit)#Lo añado a la lista
 #Creo el player
 player = Character(f"player", screen,pos_x=door_entrance.get_rect().x+50,pos_y=door_entrance.get_rect().y, image="player.png")
 for id in range(len(game_objects_list)):
-        #Comprobamos la colisión entre key el id
+        #Comprobamos la colisión entre el player y el id
     if(game_objects_list[id].get_rect().colliderect(player.get_rect())):
             player = Character(f"player", screen,pos_x=door_entrance.get_rect().x-25,pos_y=door_entrance.get_rect().y, image="player.png")
                             
@@ -305,9 +306,9 @@ game_objects_list.append(player)#Lo añado a la lista
 #Creo la potion
 potion = Potion(f"potion", screen,pos_x= random.randint(15, width - 15),pos_y= random.randint(15, height - 15))
 
-    #Comprobar si el nuevo GameObject colsiona con TODOS los anteriores
+    #Comprobar si el nuevo GameObject colisiona con TODOS los anteriores
 for id in range(len(game_objects_list)):
-        #Comprobamos la colisión entre key el id
+        #Comprobamos la colisión entre potion y el id
     if(game_objects_list[id].get_rect().colliderect(potion.get_rect())):
             potion = Potion(f"potion", screen,pos_x= random.randint(65, width - 15),pos_y= random.randint(30, height - 15),)
                             
@@ -318,65 +319,61 @@ game_objects_list.append(potion)#Lo añado a la lista
 weapon = Weapon(f"weapon", screen,random.randint(65, width - 15),random.randint(30, height - 15))
 #Comprobar si el nuevo GameObject colsiona con TODOS los anteriores
 for id in range(len(game_objects_list)):
-        #Comprobamos la colisión entre key el id
+        #Comprobamos la colisión entre weapon y el id
     if(game_objects_list[id].get_rect().colliderect(weapon.get_rect())):
             weapon = Weapon(f"weapon",screen,pos_x= random.randint(65, width - 15),pos_y= random.randint(30, height - 15),)
 
-game_objects_list.append(weapon)
+game_objects_list.append(weapon)#Lo añado a la lista
       
-
 #Hacemos la key
 key = Key(f"key", screen, random.randint(65, width-15), random.randint(30, height-15))
     #Comprobar si el nuevo GameObject colsiona con TODOS los anteriores
 for id in range(len(game_objects_list)):
-        #Comprobamos la colisión entre keyy el id
+        #Comprobamos la colisión entre key y el id
         if(game_objects_list[id].get_rect().colliderect(key.get_rect())):
             key = Key(f"key", screen, random.randint(65, width - 15), random.randint(30, height - 15))
                             
             id_key = 0
-    #El nuevo objeto no colisiona
-game_objects_list.append(key)
+    
+game_objects_list.append(key)#Lo añado a la lista
 
 #Anyadir un numero de rocas
 num_rocks = 5
 
 for id_rock in range(num_rocks):
     rock = Obstacle(f"rock{id_rock}", screen, random.randint(65, width-15), random.randint(30, height-15), "rock.png")
-    #Comprobar si el nuevo GameObject colsiona con TODOS los anteriores
+    #Comprobar si el nuevo GameObject colisiona con TODOS los anteriores
     for id in range(len(game_objects_list)):
         #Comprobamos la colisión entre rock y el id
         if(game_objects_list[id].get_rect().colliderect(rock.get_rect())):
             rock = Obstacle(f"rock{id_rock}", screen, random.randint(65, width - 15), random.randint(30, height - 15),
                             "rock.png")
             id_rock = 0
-    #El nuevo objeto no colisiona
-    game_objects_list.append(rock)
-###############################################################################
-#Creo al ghost
+   
+    game_objects_list.append(rock)#Lo añado a la lista
+
+################################################################################################################
+#Creo al ghost (el enemigo) comprobando que no co##############################################################
 for ghost in range(1):
     ghost = Character(f"ghost", screen,random.randint(65, width - 15),random.randint(30, height - 15), image="ghost.png")
-
-
-        #Comprobar si el nuevo GameObject colsiona con TODOS los anteriores
+   
     for id in range(len(game_objects_list)):
-        #Comprobamos la colisión entre key el id
+        
         if(game_objects_list[id].get_rect().colliderect(ghost.get_rect())):
             ghost = Character(f"ghost",screen,pos_x= random.randint(65, width - 15),pos_y= random.randint(30, height - 15),)
 
-    game_objects_list.append(ghost)        
+    game_objects_list.append(ghost)#Lo añado a la lista        
+################################################################################################################
+    ################################################################################################################
+################################################################################################################
 
- #####################################################################   
-
-        
-
-
-heart=GameObject(f"heart0", screen,pos_x= 15,pos_y = 15, image="cajitablanca.png")
-game_objects_list.append(heart)
-
+# Este numero indica el numero de vidas
 number=GameObject(f"number", screen,pos_x= 37,pos_y = 16, image="3.png")
 game_objects_list.append(number)
-
-
+        
+# Este es el corazon que aparece al lado del numero de vidas
+heart=GameObject(f"heart0", screen,pos_x= 15,pos_y = 15, image="cajitablanca.png")
+game_objects_list.append(heart)
 
 #Funcion que muestra el mensaje de Game over al morir
 def game_over():
@@ -389,6 +386,7 @@ def game_over():
     # Esperar un tiempo antes de cerrar el juego
     pygame.time.delay(2000)  
 
+#Esta funcion enseña el mensaje "Puerta de salida alcanzada"
 def salida_alcanzada():
     game_over_text = font.render("Puerta de salida alcanzada", True, (255, 0, 0))
     text_rect = game_over_text.get_rect(center=(screen_width//2, screen_height//2))
