@@ -16,16 +16,7 @@ font = pygame.font.Font(None, 36)
 
 
 
-#Clase GameObject
-#   Atributos
-#   - tag
-#   - pos_x
-#   - pos_y
-#   - image
-#
-#   Metodo
-#   - get_image: Devuelve una image de pygame para ese gameobject
-#   - get_rect: Devuelve el rectangulo que ocupa este gameobject
+#Class
 class GameObject:
 
     #constructor
@@ -68,6 +59,7 @@ class GameObject:
     #Funcion que devuelve la imagen del game_object
     def get_image(self):
         return self.__img
+    
     #Funcion que actualiza la imagen del game_object
     def set_image(self,img):
         
@@ -80,8 +72,6 @@ class GameObject:
     def get_rect(self):
         return self.__rect
 
-
-
 #Class Character
 class Character(GameObject):
     # constructor
@@ -89,33 +79,33 @@ class Character(GameObject):
         super().__init__(tag, screen, pos_x, pos_y, image)
 
         #Atributos
-        self.life=life
-        self.keychain=keychain
-        self.backpack=[]
-        self.alive=alive
-        self.daño=daño
+        self.life=life #Los puntos de vida
+        self.keychain=keychain #El llavero
+        self.backpack=[] #La mochila o inventario
+        self.alive=alive #Vivo o no vivo
+        self.daño=daño #Para controlar si esta recibiendo daño
+    # Cambia el estado de recibiendo daño de False a True
     def hurt(self):
         self.daño =True
+    # Cambia el estado de recibiendo daño de True a False
     def nohurt(self):
         self.daño =False
-        
-            
+    # Funcion que comprueba las colisiones        
     def __comprobar_colision(self,list_gameobjects):
-  
+
      #Debo excluir de la comprobación al jugador que está en la posición 0
-        #WARNING con el tema de la posicion 0
      for id in list_gameobjects:
         if id is not self and id.get_rect().colliderect(self.get_rect()):
 
         #Logica para el ghost
             if id.tag =="ghost":
                 
-                self.hurt()
+                self.hurt() # Cambia el estado daño a True
+                #Si tenemos weapon en la mochila 
                 if weapon in player.backpack:
-                    player.set_image("player.png")
-                    id.alive = False
-                    list_gameobjects.remove(id)    
-                    player.backpack.remove(weapon) 
+                    id.alive = False # El ghost muere
+                    list_gameobjects.remove(id) # Lo borro de la lista de objetos
+                  
                 else:
                     
                     if player.life:
@@ -270,12 +260,13 @@ class Weapon(GameObject):
         self.used=used
      
         
- #####################################       
+        
+
 #Hacemos la puerta de entrada
 door_entrance = Door(f"door_entrance", screen, random.randint(65, width-200),pos_y= random.randint(150, 500),image="door_opened.png",open=True)
     #Comprobar si el nuevo GameObject colsiona con TODOS los anteriores
 for id in range(len(game_objects_list)):
-        #Comprobamos la colisión entre door_entrance el id
+        #Comprobamos la colisión entre door_entrance y el id
     if(game_objects_list[id].get_rect().colliderect(door_entrance.get_rect())):
             door_entrance = Door(f"door_entrance", screen,pos_x= random.randint(65, width -200),pos_y=random.randint(150, 500),)
                             
