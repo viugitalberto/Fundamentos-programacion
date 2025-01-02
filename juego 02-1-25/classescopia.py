@@ -1,20 +1,21 @@
 import pygame
 import random
 import sys
+import math
 from enum import Enum
 from pygame import Surface
-pygame.init()
 
+#Pygame inicializacion
+pygame.init()
+#Las dimensiones de la screen
 screen_width = 600
 screen_height = 600
+#Defino la screen
+screen = pygame.display.set_mode((screen_width, screen_height))
+#Lista para guardar los game_objects
 game_objects_list=[]
-list_gameobjects=[]
-width=600
-height=600
-screen = pygame.display.set_mode((width,height))
+#Fuente para los mensajes de endgame
 font = pygame.font.Font(None, 36)
-
-
 
 #Class
 class GameObject:
@@ -160,9 +161,6 @@ class Character(GameObject):
             else:
                 return False
             
-  
-
-        
     def move_character_right(self, game_objects_list, x=5):
         super().move_right(x)
         if self.__comprobar_colision(game_objects_list):
@@ -187,7 +185,6 @@ class Character(GameObject):
             else:
                 super().move_down(y) 
 
-
     def move_character_down(self, game_objects_list, y=5):
         super().move_down(y)
         if self.__comprobar_colision(game_objects_list):
@@ -198,18 +195,15 @@ class Character(GameObject):
 
         
 # Class Obstacle
-# Atributo
-# - hurt
+# Define si es mobiliario o trampa
 class TypeObstacle(Enum):
     FURNITURE = 0
     TRAP = 1
-
+# Cantidad de daño
 class AmountDamage(Enum):
     LIGHT = 0
     HIGH = 1
 
-
-        
 class Obstacle(GameObject):
     def __init__(self, tag, screen, pos_x=0, pos_y=0, image="rock.png", type_obstacle=TypeObstacle.FURNITURE):
         super().__init__(tag, screen, pos_x, pos_y, image)
@@ -225,10 +219,11 @@ class Obstacle(GameObject):
 class Door(GameObject):
     def __init__(self, tag, screen, pos_x=0, pos_y=0, image="door_closed.png",open=False,exit_way=False):
         super().__init__(tag, screen, pos_x, pos_y, image)
-        self.exit_way=exit_way
-    def open_door(self):
+        self.exit_way=exit_way # Atributo que indica si es puerta de salida o no
+
+    def open_door(self): #Funcion que abre la puerta
          self.open=True  
-    def close_door(self):
+    def close_door(self): # Fucion que cierra la puerta
          self.open=False       
                
         
@@ -238,11 +233,11 @@ class Key(GameObject):
         super().__init__(tag, screen, pos_x, pos_y, image)
         self.used=True
         
-    def use(self):
+    def use(self): # Funcion que usa la llave
         self.used=True
-        door_exit.open_door()
+        door_exit.open_door() # Se abre la puerta de salida
         
-        
+
 
 #Class Potion
 class Potion(GameObject):
@@ -259,27 +254,26 @@ class Weapon(GameObject):
         super().__init__(tag, screen, pos_x, pos_y, image)
         self.used=used
      
-        
-        
+#Ahora vamos a crear los game_objects:
 
 #Hacemos la puerta de entrada
-door_entrance = Door(f"door_entrance", screen, random.randint(65, width-200),pos_y= random.randint(150, 500),image="door_opened.png",open=True)
+door_entrance = Door(f"door_entrance", screen, random.randint(65, screen_width-200),pos_y= random.randint(150, 500),image="door_opened.png",open=True)
     #Comprobar si el nuevo GameObject colsiona con TODOS los anteriores
 for id in range(len(game_objects_list)):
         #Comprobamos la colisión entre door_entrance y el id
     if(game_objects_list[id].get_rect().colliderect(door_entrance.get_rect())):
-            door_entrance = Door(f"door_entrance", screen,pos_x= random.randint(65, width -200),pos_y=random.randint(150, 500),)
+            door_entrance = Door(f"door_entrance", screen,pos_x= random.randint(65, screen_width -200),pos_y=random.randint(150, 500),)
                             
     id_door_entrance = 0
 game_objects_list.append(door_entrance)#Lo añado a la lista     
 
 #Creo la puerta de salida
-door_exit = Door(f"door_exit", screen, random.randint(65, width-15), random.randint(30, height-15),image="door_closed.png",exit_way=True)
+door_exit = Door(f"door_exit", screen, random.randint(65, screen_width-15), random.randint(30, screen_height-15),image="door_closed.png",exit_way=True)
     #Comprobar si el nuevo GameObject colisiona con TODOS los anteriores
 for id in range(len(game_objects_list)):
      #Comprobamos la colisión entre door_exit y el id
     if(game_objects_list[id].get_rect().colliderect(door_exit.get_rect())):
-        door_exit = Door(f"door_exit", screen, random.randint(65, width - 15), random.randint(30, height - 15))
+        door_exit = Door(f"door_exit", screen, random.randint(65, screen_width - 15), random.randint(30, screen_height - 15))
                             
     id_door_exit = 0
 game_objects_list.append(door_exit)#Lo añado a la lista
@@ -295,34 +289,34 @@ for id in range(len(game_objects_list)):
 game_objects_list.append(player)#Lo añado a la lista 
 
 #Creo la potion
-potion = Potion(f"potion", screen,pos_x= random.randint(15, width - 15),pos_y= random.randint(15, height - 15))
+potion = Potion(f"potion", screen,pos_x= random.randint(15, screen_width - 15),pos_y= random.randint(15, screen_height - 15))
 
     #Comprobar si el nuevo GameObject colisiona con TODOS los anteriores
 for id in range(len(game_objects_list)):
         #Comprobamos la colisión entre potion y el id
     if(game_objects_list[id].get_rect().colliderect(potion.get_rect())):
-            potion = Potion(f"potion", screen,pos_x= random.randint(65, width - 15),pos_y= random.randint(30, height - 15),)
+            potion = Potion(f"potion", screen,pos_x= random.randint(65, screen_width - 15),pos_y= random.randint(30, screen_height - 15),)
                             
     id_potion = 0
 game_objects_list.append(potion)#Lo añado a la lista
 
 #Creo el weapon
-weapon = Weapon(f"weapon", screen,random.randint(65, width - 15),random.randint(30, height - 15))
+weapon = Weapon(f"weapon", screen,random.randint(65, screen_width - 15),random.randint(30, screen_height - 15))
 #Comprobar si el nuevo GameObject colsiona con TODOS los anteriores
 for id in range(len(game_objects_list)):
         #Comprobamos la colisión entre weapon y el id
     if(game_objects_list[id].get_rect().colliderect(weapon.get_rect())):
-            weapon = Weapon(f"weapon",screen,pos_x= random.randint(65, width - 15),pos_y= random.randint(30, height - 15),)
+            weapon = Weapon(f"weapon",screen,pos_x= random.randint(65, screen_width - 15),pos_y= random.randint(30, screen_height - 15),)
 
 game_objects_list.append(weapon)#Lo añado a la lista
       
 #Hacemos la key
-key = Key(f"key", screen, random.randint(65, width-15), random.randint(30, height-15))
+key = Key(f"key", screen, random.randint(65, screen_width-15), random.randint(30, screen_height-15))
     #Comprobar si el nuevo GameObject colsiona con TODOS los anteriores
 for id in range(len(game_objects_list)):
         #Comprobamos la colisión entre key y el id
         if(game_objects_list[id].get_rect().colliderect(key.get_rect())):
-            key = Key(f"key", screen, random.randint(65, width - 15), random.randint(30, height - 15))
+            key = Key(f"key", screen, random.randint(65, screen_width - 15), random.randint(30, screen_height - 15))
                             
             id_key = 0
     
@@ -332,40 +326,37 @@ game_objects_list.append(key)#Lo añado a la lista
 num_rocks = 5
 
 for id_rock in range(num_rocks):
-    rock = Obstacle(f"rock{id_rock}", screen, random.randint(65, width-15), random.randint(30, height-15), "rock.png")
+    rock = Obstacle(f"rock{id_rock}", screen, random.randint(65, screen_width-15), random.randint(30, screen_height-15), "rock.png")
     #Comprobar si el nuevo GameObject colisiona con TODOS los anteriores
     for id in range(len(game_objects_list)):
         #Comprobamos la colisión entre rock y el id
         if(game_objects_list[id].get_rect().colliderect(rock.get_rect())):
-            rock = Obstacle(f"rock{id_rock}", screen, random.randint(65, width - 15), random.randint(30, height - 15),
+            rock = Obstacle(f"rock{id_rock}", screen, random.randint(65, screen_width - 15), random.randint(30, screen_height - 15),
                             "rock.png")
             id_rock = 0
    
     game_objects_list.append(rock)#Lo añado a la lista
 
-################################################################################################################
-#Creo al ghost (el enemigo) comprobando que no co##############################################################
+#Creo al ghost (el enemigo)
+#Compruebo las colisiones como todos los demas objetos y compruebo que siempre aparezca a una distancia mínima del player
 for ghost in range(1):
-    ghost = Character(f"ghost", screen,random.randint(65, width - 15),random.randint(30, height - 15), image="ghost.png")
+    ghost = Character(f"ghost", screen,random.randint(65, screen_width - 15),random.randint(30, screen_height - 15), image="ghost.png")
    
     for id in range(len(game_objects_list)):
-        
-        if(game_objects_list[id].get_rect().colliderect(ghost.get_rect())):
-            ghost = Character(f"ghost",screen,pos_x= random.randint(65, width - 15),pos_y= random.randint(30, height - 15),)
+
+        if (game_objects_list[id].get_rect().colliderect(ghost.get_rect())) and math.sqrt((ghost.pos_x - player.pos_x) ** 2 + (ghost.pos_y - player.pos_y) ** 2)  <60:
+            ghost = Character(f"ghost",screen,pos_x= random.randint(65, screen_width - 15),pos_y= random.randint(30, screen_height - 15),)
 
     game_objects_list.append(ghost)#Lo añado a la lista        
-################################################################################################################
-    ################################################################################################################
-################################################################################################################
 
 # Este numero indica el numero de vidas
 number=GameObject(f"number", screen,pos_x= 37,pos_y = 16, image="3.png")
 game_objects_list.append(number)
         
 # Este es el corazon que aparece al lado del numero de vidas
-heart=GameObject(f"heart0", screen,pos_x= 15,pos_y = 15, image="cajitablanca.png")
+heart=GameObject(f"heart0", screen,pos_x= 14,pos_y = 15, image="heart.png")
 game_objects_list.append(heart)
-
+       
 #Funcion que muestra el mensaje de Game over al morir
 def game_over():
     game_over_text = font.render("Game Over", True, (255, 0, 0))
@@ -387,3 +378,6 @@ def salida_alcanzada():
 
     # Esperar un tiempo antes de cerrar el juego
     pygame.time.delay(2000)      
+
+dx = player.get_rect().x - ghost.get_rect().x
+dy = player.get_rect().y - ghost.get_rect().y    

@@ -1,16 +1,9 @@
 #Importaciones
 import pygame
-import random
-import math
-import sys
-from classescopia import GameObject, Obstacle, Door, game_objects_list, screen, width, height, player, ghost, potion, number, weapon, game_over, screen_width , screen_height
+from classescopia import game_objects_list,screen, dx, dy, player, ghost, potion, number, weapon, game_over
 
 #Pygame inicializacion
 pygame.init()
-#Fuente para los mensajes de endgame
-font = pygame.font.Font(None, 36)
-#Defino la screen
-screen = pygame.display.set_mode((screen_width, screen_height))
 # Establezco la velocidad del ghost
 velocidad_ghost = 3
 #Definimos clock, lo usaremos para capar los fps
