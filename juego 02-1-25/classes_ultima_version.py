@@ -12,8 +12,10 @@ screen_width = 600
 screen_height = 600
 #Defino la screen
 screen = pygame.display.set_mode((screen_width, screen_height))
+
 #Lista para guardar los game_objects
 game_objects_list=[]
+
 #Fuente para los mensajes de endgame
 font = pygame.font.Font(None, 36)
 
@@ -23,7 +25,6 @@ class GameObject:
     #constructor
     def __init__(self,tag,screen,pos_x=0,pos_y=0,image="fallenangel.png",visible=True):
         
-
         #Atributos de la instancia
         self.tag = tag
         self.pos_x = pos_x
@@ -85,12 +86,15 @@ class Character(GameObject):
         self.backpack=[] #La mochila o inventario
         self.alive=alive #Vivo o no vivo
         self.daño=daño #Para controlar si esta recibiendo daño
-    # Cambia el estado de recibiendo daño de False a True
+    
+    # Funcion que cambia el estado de recibiendo daño de False a True
     def hurt(self):
         self.daño =True
-    # Cambia el estado de recibiendo daño de True a False
+
+    # Funcion que cambia el estado de recibiendo daño de True a False
     def nohurt(self):
         self.daño =False
+
     # Funcion que comprueba las colisiones        
     def __comprobar_colision(self,list_gameobjects):
 
@@ -98,7 +102,7 @@ class Character(GameObject):
      for id in list_gameobjects:
         if id is not self and id.get_rect().colliderect(self.get_rect()):
 
-        #Logica para el ghost
+            #Colision para el ghost
             if id.tag =="ghost":
                 
                 self.hurt() # Cambia el estado daño a True
@@ -107,13 +111,12 @@ class Character(GameObject):
                     id.alive = False # El ghost muere
                     list_gameobjects.remove(id) # Lo borro de la lista de objetos
                   
-                else:
-                    
-                    if player.life:
+                else: # Si no tenemos weapon 
+                    # Si el player tiene mas de 1 de vida le resta 1
+                    if player.life >1:
                         self.life-=1
-                        print (self.life)
                         
-                        
+                    # Cuando llega a 0 el player muere
                     if player.life==0:
                         player.alive=False
                     
@@ -121,46 +124,51 @@ class Character(GameObject):
                    
                 
                   
-        #Logica para la key
+            #Colision para la key
             if id.tag == "key":
-                self.keychain="key"
-                id.use()      
-                list_gameobjects.remove(id)
+                self.keychain="key" # La añado al llavero
+                id.use()      # la uso
+                list_gameobjects.remove(id) # Desaparece de la lista
                 return True    
               
-        #Logica para la potion
+            #Colision para la potion
             if id.tag == "potion":
-                self.backpack.append(potion)
-                id.use()      
-                list_gameobjects.remove(id)
+                self.backpack.append(potion) # La añado a la mochila
+                list_gameobjects.remove(id) # La borro de la lista para dejar de pintarla
                 return True         
                  
-        #Logica para el weapon
+            #Colision para el weapon igual que para la potion
             if id.tag == "weapon":
                 self.backpack.append(weapon)
                 list_gameobjects.remove(weapon)
                 return True
 
             #Colision de la door_exit:
+            # Si tenemos key se abre y muestra el mensaje "salida alcanzada"
+            # Y el juego acaba
             if id.tag=="door_exit" and self.keychain=="key":
                  id.open_door()
                  salida_alcanzada()
                  player.alive = False
                  print(f"Puerta de salida alcanzada")
                  return True
+            # Si no tenemos la key simplemente es un obstaculo
             if id.tag=="door_exit":     
                  return True   
         
 
-             #Logica para las rocas y la puerta de entrada:
+            #Colision para las rocas y la puerta de entrada:
+            # Solo son obstaculos
             if id.image=="rock.png" or id.tag=="door_entrance":
-                 
                  return True  
                             
-             
             else:
                 return False
             
+    # Funciones de movimiento del pj, vistas en clase
+    # He añadido que el pj salte para atras al recibir daño
+    # para que tengas oportunidad de escapar y no recibas daño 
+    # en cadena hasta morir.        
     def move_character_right(self, game_objects_list, x=5):
         super().move_right(x)
         if self.__comprobar_colision(game_objects_list):
@@ -245,7 +253,7 @@ class Potion(GameObject):
         super().__init__(tag, screen, pos_x, pos_y, image)
         self.used=used
         self.points_life=points_life
-    def use(self):
+    def use(self): # Cambia el estado de used a True
         self.used=True
         
 #Class Weapon
@@ -349,11 +357,13 @@ for ghost in range(1):
 
     game_objects_list.append(ghost)#Lo añado a la lista        
 
-# Este numero indica el numero de vidas
+
+# He hecho un marcador de vidas mediante un corazon y un número que va cambiando
+# Este numero indica el numero de vidas ( empieza en 3)
 number=GameObject(f"number", screen,pos_x= 37,pos_y = 16, image="3.png")
 game_objects_list.append(number)
         
-# Este es el corazon que aparece al lado del numero de vidas
+# Este es el corazon que aparece al lado del numero de vidas, es solo atrezzo
 heart=GameObject(f"heart0", screen,pos_x= 14,pos_y = 15, image="heart.png")
 game_objects_list.append(heart)
        
@@ -365,7 +375,7 @@ def game_over():
     screen.blit(game_over_text, text_rect)
     pygame.display.flip()
 
-    # Esperar un tiempo antes de cerrar el juego
+    # Espera un tiempo antes de cerrar el juego
     pygame.time.delay(2000)  
 
 #Esta funcion enseña el mensaje "Puerta de salida alcanzada"
@@ -376,8 +386,10 @@ def salida_alcanzada():
     screen.blit(game_over_text, text_rect)
     pygame.display.flip()
 
-    # Esperar un tiempo antes de cerrar el juego
+    # Espera un tiempo antes de cerrar el juego
     pygame.time.delay(2000)      
 
+# dx y dy me son útiles para calcular la posicion del ghost respecto 
+# al player, las uso para la lógica que hace que lo persiga.
 dx = player.get_rect().x - ghost.get_rect().x
 dy = player.get_rect().y - ghost.get_rect().y    

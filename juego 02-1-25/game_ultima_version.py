@@ -1,6 +1,6 @@
 #Importaciones
 import pygame
-from classescopia import game_objects_list,screen, dx, dy, player, ghost, potion, number, weapon, game_over
+from classes_ultima_version import game_objects_list,screen, dx, dy, player, ghost, potion, number, weapon, game_over
 
 #Pygame inicializacion
 pygame.init()
@@ -23,9 +23,9 @@ while running==True:
     
 
    # pygame.event PILA DE EVENTOS que ocurren en la ventana
-    # get -> Dame el primer evento ocurrido
     for event in pygame.event.get():
         #Esta es la logica para el movimiento del enemigo
+        #Calculo la distancia entre player y ghost en ambos ejes
         dx = player.get_rect().x - ghost.get_rect().x
         dy = player.get_rect().y - ghost.get_rect().y
         #Si la distancia entre ghost y player es mayor en x que en y se mueve en x primero
@@ -82,6 +82,7 @@ while running==True:
                 player_move = True
             elif event.unicode == "p" and potion in player.backpack:
                     player.life += 1
+                    potion.use()
                     player.backpack.remove(potion)
                     
         #Si cerramos la ventana o el jugador muere el juego se acaba
@@ -97,7 +98,8 @@ while running==True:
             player_move = False
            
     
-    #Este codigo cambia el número de vidas que se muestran arriba al lado del corazón:
+    #Cambio el número de vidas que se muestran arriba al lado del corazón
+    #cambiando la img del obj number
     if player.life >3:
         number.set_image("4.png")
     elif player.life ==3:
@@ -118,7 +120,8 @@ while running==True:
             player.move_character_down(game_objects_list, 2)
     # Pinto el fondo:
     screen.fill([188,170,164])
-    #Me aseguro de que el daño de player este en False
+    #Me aseguro de que el daño de player este en False 
+    #siempre que no este colisionando con el ghost
     player.nohurt()
     #Pintamos los objectos
     for game_object in game_objects_list:
